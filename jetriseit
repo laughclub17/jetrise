@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JetRise IT Solutions – Simple iPhone apps for everyday life</title>
+<meta name="description" content="JetRise IT Solutions LLC builds focused iPhone and iPad apps for rent tracking, invoicing, PDF scanning, habits, mental math, and more.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F2F5F9; --surface:#FFFFFF; --ink:#0F1A30; --muted:#4A5670; --line:#D5DCE8;
+  --accent:#2B4BFF; --on-accent:#FFFFFF; --sun:#FFC533;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1222; --surface:#131C33; --ink:#EAF0FB; --muted:#9AA8C4; --line:#24304D;
+    --accent:#8DA0FF; --on-accent:#0B1222;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C33; --ink:#EAF0FB; --muted:#9AA8C4; --line:#24304D;
+  --accent:#8DA0FF; --on-accent:#0B1222;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.0625rem;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible{outline:3px solid var(--sun);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--display);line-height:1.08;margin:0;letter-spacing:-0.02em}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:22px 0}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.15rem;color:var(--ink);text-decoration:none}
+.mark{width:28px;height:28px;border-radius:8px;background:var(--accent);position:relative;flex:none}
+.mark::after{content:"";position:absolute;left:7px;top:6px;width:14px;height:14px;background:var(--sun);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.top nav{display:flex;gap:22px;flex-wrap:wrap}
+.top nav a{color:var(--ink);text-decoration:none;font-weight:500}
+.top nav a:hover{color:var(--accent);text-decoration:underline}
+
+/* hero */
+.hero{padding:56px 0 24px}
+.hero h1{font-weight:800;font-size:clamp(2.5rem,6.6vw,5.2rem);max-width:15ch}
+.hero p{max-width:54ch;color:var(--muted);font-size:1.2rem;margin:24px 0 32px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;padding:13px 22px;border-radius:12px;font-weight:600;text-decoration:none;border:2px solid var(--accent)}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.ghost{color:var(--accent);background:transparent}
+.btn:hover{filter:brightness(1.08)}
+
+/* the rising shelf: one tile per app, each a step higher */
+.shelf{display:grid;grid-template-columns:repeat(14,1fr);gap:9px;align-items:end;margin:64px 0 0;padding-bottom:8px}
+.tile{--c:#334155;aspect-ratio:1;border-radius:26%;background:var(--c);color:#fff;display:grid;place-items:center;overflow:hidden;font-family:var(--display);font-weight:800;font-size:clamp(.8rem,1.5vw,1.2rem);text-decoration:none;margin-bottom:calc(var(--i) * 9px);transition:translate .25s cubic-bezier(.2,.8,.2,1),rotate .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.tile img{width:100%;height:100%;object-fit:cover;display:block}
+.tile:hover,.tile:focus-visible{translate:0 -8px;rotate:-5deg;box-shadow:0 16px 26px rgba(15,26,48,.28)}
+/* hero shelf: rise in one after another, then drift gently */
+.shelf .tile{animation:rise .9s cubic-bezier(.2,.9,.3,1.25) both,float 5.5s ease-in-out infinite;animation-delay:calc(var(--i) * 90ms),calc(1.2s + var(--i) * 320ms)}
+@keyframes rise{from{opacity:0;transform:translateY(60px) scale(.85)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.hero h1,.hero>p,.hero .btns{animation:fadeup .8s cubic-bezier(.2,.8,.2,1) both}
+.hero>p{animation-delay:.12s}
+.hero .btns{animation-delay:.24s}
+@keyframes fadeup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+/* scroll reveal (only when JS is running) */
+.js .reveal{opacity:0;translate:0 22px;transition:opacity .7s ease,translate .7s cubic-bezier(.2,.8,.2,1)}
+.js .reveal.in{opacity:1;translate:0 0}
+.js .reveal .app{opacity:0;translate:0 14px;transition:opacity .6s ease,translate .6s cubic-bezier(.2,.8,.2,1)}
+.js .reveal.in .app{opacity:1;translate:0 0}
+.js .reveal.in .app:nth-child(2){transition-delay:.12s}
+.js .reveal.in .app:nth-child(3){transition-delay:.24s}
+.js .reveal.in .app:nth-child(4){transition-delay:.36s}
+.js .reveal.in .app:nth-child(5){transition-delay:.48s}
+.c1{--c:#2B4BFF}.c2{--c:#0F766E}.c3{--c:#6D28D9}.c4{--c:#BE185D}.c5{--c:#15803D}.c6{--c:#B45309}.c7{--c:#0369A1}.c8{--c:#475569}.c9{--c:#0E7490}.c10{--c:#9F1239}.c11{--c:#4D7C0F}.c12{--c:#A21CAF}.c13{--c:#1D4ED8}.c14{--c:#B91C1C}
+
+/* sections */
+section{padding:72px 0}
+.lead{max-width:60ch;color:var(--muted);margin:14px 0 0}
+h2{font-weight:800;font-size:clamp(1.8rem,4vw,2.6rem)}
+.group{display:grid;grid-template-columns:260px 1fr;gap:32px;border-top:2px solid var(--ink);padding:28px 0 12px;margin-top:40px}
+.group h3{font-size:1.35rem}
+.group .note{color:var(--muted);margin:8px 0 0;font-size:.98rem}
+.apps{list-style:none;margin:0;padding:0}
+.app{display:grid;grid-template-columns:56px 1fr auto;gap:18px;align-items:center;padding:16px 0;border-top:1px solid var(--line)}
+.app:first-child{border-top:0;padding-top:0}
+.app .tile{width:56px;font-size:1.05rem;margin:0;animation:none}
+.app h4{margin:0;font-family:var(--display);font-size:1.15rem;font-weight:600}
+.app p{margin:2px 0 0;color:var(--muted);font-size:.98rem;max-width:56ch}
+.app a.store{font-weight:600;white-space:nowrap}
+
+.how{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:36px 48px;margin-top:36px}
+.grid2 h3{font-size:1.25rem;padding-top:14px;border-top:1px solid var(--line)}
+.grid2 p{margin:8px 0 0;color:var(--muted)}
+
+.about{display:grid;grid-template-columns:1.3fr 1fr;gap:56px}
+.about p{margin:16px 0 0;color:var(--muted);max-width:60ch}
+.contact{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px;align-self:start}
+.contact h3{font-size:1.3rem}
+.contact p{margin:10px 0 18px}
+
+footer{border-top:1px solid var(--line);padding:28px 0 48px;color:var(--muted);font-size:.95rem}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{color:var(--muted);margin-left:18px}
+footer a:first-child{margin-left:0}
+
+@media (max-width:760px){
+  .shelf{grid-template-columns:repeat(7,1fr);gap:8px;margin-top:44px}
+  .tile{margin-bottom:0}
+  .group,.about,.grid2{grid-template-columns:1fr;gap:20px}
+  .app{grid-template-columns:56px 1fr}
+  .app a.store{grid-column:2}
+  section{padding:56px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  .shelf .tile,.hero h1,.hero>p,.hero .btns{animation:none}
+  .tile,.js .reveal,.js .reveal .app{transition:none}
+  .js .reveal,.js .reveal .app{opacity:1;translate:none}
+  .tile:hover,.tile:focus-visible{rotate:none}
+  html{scroll-behavior:auto}
+}
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="https://jetriseitsolutions.com/"><span class="mark" aria-hidden="true"></span>JetRise IT Solutions</a>
+    <nav aria-label="Main">
+      <a href="#apps">Apps</a>
+      <a href="https://jetriseitsolutions.com/Services/">Services</a>
+      <a href="https://jetriseitsolutions.com/Projects/">Projects</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>Simple iPhone apps for the work of everyday life.</h1>
+      <p>JetRise IT Solutions builds focused utility, productivity, and lifestyle apps for iPhone and iPad: rent tracking, invoices, PDF scanning, habits, mental math, and more.</p>
+      <div class="btns">
+        <a class="btn primary" href="#apps">Browse the apps</a>
+        <a class="btn ghost" href="https://jetriseitsolutions.com/Projects/">Work with us</a>
+      </div>
+      <div class="shelf" aria-label="Our apps">
+        <a class="tile c1" style="--i:0" href="https://apps.apple.com/us/app/rentwise-manager/id6760789876" aria-label="RentWise Manager on the App Store">RW</a>
+        <a class="tile c3" style="--i:1" href="https://apps.apple.com/us/app/rentmate-rent-manager/id6760446102" aria-label="RentMate – Rent Manager on the App Store">RM</a>
+        <a class="tile c2" style="--i:2" href="https://apps.apple.com/us/app/rentscope/id6760597723" aria-label="RentScope on the App Store">RS</a>
+        <a class="tile c4" style="--i:3" href="https://apps.apple.com/us/app/jetrise-invoice-pro/id6761400694" aria-label="JetRise Invoice Pro on the App Store">IP</a>
+        <a class="tile c9" style="--i:4" href="https://apps.apple.com/us/app/jetrise-trader-journal/id6780058902" aria-label="JetRise Trader Journal on the App Store">TJ</a>
+        <a class="tile c10" style="--i:5" href="https://apps.apple.com/us/app/jetrise-snappdf/id6772828789" aria-label="Jetrise SnapPDF on the App Store">SP</a>
+        <a class="tile c5" style="--i:6" href="https://apps.apple.com/app/tipmate-smart-tip-calculator/id6760203997" aria-label="TipMate – Smart Tip Calculator on the App Store">TM</a>
+        <a class="tile c6" style="--i:7" href="https://apps.apple.com/gh/app/jetrise-it-solutions/id6757778831" aria-label="JetRise IT Solutions on the App Store">JR</a>
+        <a class="tile c11" style="--i:8" href="https://apps.apple.com/us/app/jetrise-math-buddy/id6795374974" aria-label="JetRise Math Buddy on the App Store">MB</a>
+        <a class="tile c7" style="--i:9" href="https://apps.apple.com/us/app/vedic-maths-tricks/id6761011154" aria-label="Vedic Maths Tricks on the App Store">VM</a>
+        <a class="tile c12" style="--i:10" href="https://apps.apple.com/us/app/gridflow-brain-puzzle/id6761633183" aria-label="GridFlow: Brain Puzzle on the App Store">GF</a>
+        <a class="tile c13" style="--i:11" href="https://apps.apple.com/us/app/jetrise-habit-tracker/id6768347987" aria-label="Jetrise Habit Tracker on the App Store">HT</a>
+        <a class="tile c14" style="--i:12" href="https://apps.apple.com/us/app/jetrise-hydrate/id6762170857" aria-label="Jetrise Hydrate on the App Store">HY</a>
+        <a class="tile c8" style="--i:13" href="https://apps.apple.com/app/daily-inspire-quotes/id6758560043" aria-label="Daily Inspire Quotes on the App Store">DQ</a>
+      </div>
+    </div>
+
+    <section id="apps">
+      <h2>Fourteen apps, each built for one job</h2>
+      <p class="lead">Every app is free of clutter and quick to learn. Pick the one that fits what you're doing today.</p>
+
+      <div class="group">
+        <div>
+          <h3>Rentals</h3>
+          <p class="note">For landlords and property owners.</p>
+        </div>
+        <ul class="apps">
+          <li class="app">
+            <span class="tile c1" aria-hidden="true">RW</span>
+            <div><h4>RentWise Manager</h4><p>Manage rent, tenants, and property expenses in one place.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/rentwise-manager/id6760789876">View on App Store</a>
+          </li>
+          <li class="app">
+            <span class="tile c3" aria-hidden="true">RM</span>
+            <div><h4>RentMate – Rent Manager</h4><p>Track rent, tenants, and expenses in a practical app for rental owners.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/rentmate-rent-manager/id6760446102">View on App Store</a>
+          </li>
+          <li class="app">
+            <span class="tile c2" aria-hidden="true">RS</span>
+            <div><h4>RentScope</h4><p>Rental analytics for owners and investors: income, expenses, and performance at a glance.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/rentscope/id6760597723">View on App Store</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="group">
+        <div>
+          <h3>Money and work</h3>
+          <p class="note">For invoices, trades, documents, and projects.</p>
+        </div>
+        <ul class="apps">
+          <li class="app">
+            <span class="tile c4" aria-hidden="true">IP</span>
+            <div><h4>JetRise Invoice Pro</h4><p>Create and send professional invoices, track payments, and manage clients on the go.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/jetrise-invoice-pro/id6761400694">View on App Store</a>
+          </li>
+          <li class="app">
+            <span class="tile c9" aria-hidden="true">TJ</span>
+            <div><h4>JetRise Trader Journal</h4><p>Track your F&amp;O trades and profit and loss, with analytics to review performance.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/jetrise-trader-journal/id6780058902">View on App Store</a>
+          </li>
+          <li class="app">
+            <span class="tile c10" aria-hidden="true">SP</span>
+            <div><h4>Jetrise SnapPDF</h4><p>Scan, convert, and sign PDFs fast.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/jetrise-snappdf/id6772828789">View on App Store</a>
+          </li>
+          <li class="app">
+            <span class="tile c5" aria-hidden="true">TM</span>
+            <div><h4>TipMate – Smart Tip Calculator</h4><p>Calculate tips quickly and split the bill with friends.</p></div>
+            <a class="store" href="https://apps.apple.com/app/tipmate-smart-tip-calculator/id6760203997">View on App Store</a>
+          </li>
+          <li class="app">
+            <span class="tile c6" aria-hidden="true">JR</span>
+            <div><h4>JetRise IT Solutions</h4><p>Plan projects and track scope, timelines, estimates, progress, and task checklists.</p></div>
+            <a class="store" href="https://apps.apple.com/gh/app/jetrise-it-solutions/id6757778831">View on App Store</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="group">
+        <div>
+          <h3>Learn and play</h3>
+          <p class="note">Sharpen your mind a little every day.</p>
+        </div>
+        <ul class="apps">
+          <li class="app">
+            <span class="tile c11" aria-hidden="true">MB</span>
+            <div><h4>JetRise Math Buddy</h4><p>Math practice and skill builder for steady progress.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/jetrise-math-buddy/id6795374974">View on App Store</a>
+          </li>
+          <li class="app">
+            <span class="tile c7" aria-hidden="true">VM</span>
+            <div><h4>Vedic Maths Tricks</h4><p>Learn mental math shortcuts and speed calculation techniques with practice-friendly methods.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/vedic-maths-tricks/id6761011154">View on App Store</a>
+          </li>
+          <li class="app">
+            <span class="tile c12" aria-hidden="true">GF</span>
+            <div><h4>GridFlow: Brain Puzzle</h4><p>A daily logic challenge in the form of a brain puzzle.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/gridflow-brain-puzzle/id6761633183">View on App Store</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="group">
+        <div>
+          <h3>Daily habits</h3>
+          <p class="note">Small habits that add up.</p>
+        </div>
+        <ul class="apps">
+          <li class="app">
+            <span class="tile c13" aria-hidden="true">HT</span>
+            <div><h4>Jetrise Habit Tracker</h4><p>Build habits and rise every day.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/jetrise-habit-tracker/id6768347987">View on App Store</a>
+          </li>
+          <li class="app">
+            <span class="tile c14" aria-hidden="true">HY</span>
+            <div><h4>Jetrise Hydrate</h4><p>Log your water and keep your hydration on track.</p></div>
+            <a class="store" href="https://apps.apple.com/us/app/jetrise-hydrate/id6762170857">View on App Store</a>
+          </li>
+          <li class="app">
+            <span class="tile c8" aria-hidden="true">DQ</span>
+            <div><h4>Daily Inspire Quotes</h4><p>Get daily motivation, save your favorite quotes, and share them with friends and family.</p></div>
+            <a class="store" href="https://apps.apple.com/app/daily-inspire-quotes/id6758560043">View on App Store</a>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- how we build -->
+</div>
+
+<div class="how">
+  <div class="wrap">
+    <section>
+      <h2>How we build</h2>
+      <div class="grid2">
+        <div><h3>Made for iPhone and iPad</h3><p>Native, modern mobile development that feels at home on Apple devices.</p></div>
+        <div><h3>One job per app</h3><p>Clean, focused interfaces. Nothing to learn before you can get started.</p></div>
+        <div><h3>Privacy first</h3><p>Lightweight apps that ask for little and respect what you share.</p></div>
+        <div><h3>Ready to launch</h3><p>Hands-on support taking an app from idea to the App Store.</p></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="about" id="about">
+    <div>
+      <h2>An independent app studio</h2>
+      <p>JetRise IT Solutions LLC designs, builds, and publishes its own apps. We also take on software development and IT consulting work for businesses that want the same clarity in their own products.</p>
+      <p>Have a project in mind? See what we do on the <a href="https://jetriseitsolutions.com/Services/">Services</a> and <a href="https://jetriseitsolutions.com/Projects/">Projects</a> pages.</p>
+    </div>
+    <div class="contact" id="contact">
+      <h3>Get in touch</h3>
+      <p>Questions about an app, or a project to discuss? Send us an email.</p>
+      <a class="btn primary" href="mailto:developer@jetriseitsolutions.com">Email developer@jetriseitsolutions.com</a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 JetRise IT Solutions LLC</span>
+    <span>
+      <a href="https://jetriseitsolutions.com/Privacy-Policy/">Privacy Policy</a>
+      <a href="https://jetriseitsolutions.com/terms-of-use/">Terms of Use</a>
+      <a href="https://jetriseitsolutions.com/promotions/">Promotions</a>
+    </span>
+  </div>
+</footer>
+<script>
+// Real app icons: put an image URL or data: URI next to each app. Empty keeps the monogram tile.
+const ICONS = {
+  RW:"", // RentWise Manager
+  RS:"", // RentScope
+  RM:"", // RentMate
+  IP:"", // JetRise Invoice Pro
+  TM:"", // TipMate
+  JR:"", // JetRise IT Solutions
+  VM:"", // Vedic Maths Tricks
+  DQ:"", // Daily Inspire Quotes
+  TJ:"", // JetRise Trader Journal
+  SP:"", // Jetrise SnapPDF
+  MB:"", // JetRise Math Buddy
+  GF:"", // GridFlow: Brain Puzzle
+  HT:"", // Jetrise Habit Tracker
+  HY:""  // Jetrise Hydrate
+};
+document.querySelectorAll('.tile').forEach(function(t){
+  var src = ICONS[t.textContent.trim()];
+  if(!src) return;
+  var img = new Image();
+  img.alt = "";
+  img.onload = function(){ t.textContent = ""; t.appendChild(img); };
+  img.src = src;
+});
+var io = 'IntersectionObserver' in window ? new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{threshold:.15}) : null;
+document.querySelectorAll('.group,.grid2>div,.contact').forEach(function(el){
+  el.classList.add('reveal');
+  if(io) io.observe(el); else el.classList.add('in');
+});
+</script>
+</body>
+</html>
